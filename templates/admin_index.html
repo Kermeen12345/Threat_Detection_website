@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | Cyber Threat Detection</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/admin.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <style>
+      /* Navbar Logo */
+      .navbar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .navbar-logo img {
+        height: 80px; /* increased size */
+        width: 80px; /* increased size */
+        border-radius: 50%; /* makes it round */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 🔹 Navigation -->
+    <nav>
+      <div class="navbar-logo">
+        <img
+          src="{{ url_for('static', filename='asset/logo.png') }}"
+          alt="Logo"
+        />
+        <h2>Cyber Threat Admin</h2>
+      </div>
+      <ul>
+        <li><a href="{{ url_for('admin_index') }}" class="active">Home</a></li>
+        <li><a href="{{ url_for('admin_panel') }}">Admin Panel</a></li>
+        <li><a href="{{ url_for('admin_analytics') }}">Admin Dashboard</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      </ul>
+    </nav>
+
+    <!-- 🔹 Hero / Info Section -->
+    <section class="hero">
+      <h1>Welcome to CyberThreat Detector</h1>
+      <p>
+        Protect your system by analyzing your log files for potential security
+        threats. Our AI-driven platform scans logs, detects anomalies, and
+        provides actionable insights to keep your system safe.
+      </p>
+      <a href="{{ url_for('user_dashboard') }}" class="btn">Go to Dashboard</a>
+    </section>
+
+    <!-- 🔹 Instructions Section -->
+    <section class="instructions">
+      <h2>How It Works</h2>
+      <ul>
+        <li>
+          Our platform analyzes your system logs to detect potential threats.
+        </li>
+        <li>
+          Upload logs on the Dashboard page in plain text (.txt or .log) format.
+        </li>
+        <li>
+          Get detailed results showing anomalies and possible security issues.
+        </li>
+        <li>
+          Use this information to secure your system and prevent breaches.
+        </li>
+      </ul>
+      <p>
+        Click the "Go to Dashboard" button above to start analyzing your logs.
+      </p>
+    </section>
+
+    <!-- 🔹 Footer -->
+    <footer>
+      © 2025 CyberThreat Detector | Secure Your Digital World With Web Threat
+    </footer>
+  </body>
+</html>

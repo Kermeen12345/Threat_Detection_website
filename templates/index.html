@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CyberThreat Detector</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <style>
+      /* Navbar logo styling */
+      .navbar-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .navbar-logo img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%; /* Makes it round */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 🔹 Navigation Bar -->
+    <nav>
+      <div class="navbar-logo">
+        <img
+          src="{{ url_for('static', filename='asset/logo.png') }}"
+          alt="Logo"
+        />
+        <h2>CyberThreat Detector</h2>
+      </div>
+      <ul>
+        <li><a href="{{ url_for('home') }}" class="active">Home</a></li>
+        <li><a href="{{ url_for('signup_page') }}">Signup</a></li>
+        <li><a href="{{ url_for('login_page') }}">Login</a></li>
+      </ul>
+    </nav>
+
+    <!-- 🔹 Hero Section -->
+    <section class="hero">
+      <h1>Detect. Analyze. Defend. 🔐</h1>
+      <p>
+        Experience next-gen cybersecurity threat detection powered by AI-driven
+        log analysis and live threat intelligence APIs.
+      </p>
+      <a href="{{ url_for('login_page') }}" class="btn">Start Analysis</a>
+    </section>
+
+    <!-- 🔹 Importance of Threat Detection Section -->
+    <section class="importance">
+      <h2>Why Detecting Cyber Threats is Crucial ⚠️</h2>
+      <p>
+        In today’s digital era, cyberattacks can occur at any moment — from
+        malware infections to phishing and data breaches. Early detection helps
+        organizations prevent data loss, minimize damage, and protect
+        confidential information. By identifying suspicious activities in
+        real-time, we can strengthen defenses, ensure system integrity, and
+        build a safer cyber ecosystem for everyone.
+      </p>
+    </section>
+
+    <!-- 🔹 Footer -->
+    <footer>© 2025 CyberThreat Detector | Secure Your Digital World</footer>
+  </body>
+</html>

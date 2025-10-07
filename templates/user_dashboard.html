@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard - CyberThreat Detector</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+      /* Navbar logo styling */
+      .navbar-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .navbar-logo img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+      }
+
+      /* Download button */
+      .download-btn {
+        display: inline-block;
+        background-color: var(--accent);
+        color: #000;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        text-decoration: none;
+        margin-top: 15px;
+        transition: all 0.3s ease;
+      }
+
+      .download-btn:hover {
+        background-color: #00aaff;
+        box-shadow: 0 0 15px var(--accent);
+        transform: scale(1.05);
+      }
+
+      /* Progress bar styling */
+      #progress-container {
+        width: 100%;
+        background-color: #1a2433;
+        border-radius: 5px;
+        margin: 10px 0;
+        display: none;
+      }
+
+      #progress-bar {
+        width: 0%;
+        height: 20px;
+        background-color: var(--accent);
+        text-align: center;
+        line-height: 20px;
+        color: #000;
+        border-radius: 5px;
+        font-weight: bold;
+      }
+
+      /* Upload Section */
+      .upload-container {
+        background: var(--panel);
+        border-radius: 15px;
+        padding: 40px;
+        margin: 80px auto;
+        width: 60%;
+        text-align: center;
+        box-shadow: 0 0 25px rgba(0, 200, 255, 0.15);
+      }
+
+      /* Result Section */
+      .analysis-results {
+        width: 70%;
+        margin: 40px auto;
+      }
+
+      .result-card {
+        background: var(--panel);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px auto;
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+      }
+
+      .result-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .result-header img {
+        width: 45px;
+        height: 45px;
+      }
+
+      .confidence-bar-container {
+        width: 100%;
+        background: #1a2433;
+        border-radius: 10px;
+        margin-top: 15px;
+        overflow: hidden;
+      }
+
+      .confidence-bar {
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        font-weight: bold;
+        color: #fff;
+        border-radius: 10px;
+      }
+
+      .confidence-bar.malicious {
+        background: var(--danger);
+      }
+      .confidence-bar.benign {
+        background: var(--success);
+      }
+
+      footer {
+        text-align: center;
+        padding: 30px;
+        color: #999;
+        font-size: 14px;
+        border-top: 1px solid rgba(0, 212, 255, 0.1);
+        background: rgba(10, 15, 30, 0.9);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- 🔹 Navigation Bar -->
+    <nav>
+      <div class="navbar-logo">
+        <img
+          src="{{ url_for('static', filename='asset/logo.png') }}"
+          alt="Logo"
+        />
+        <h2>CyberThreat Detector</h2>
+      </div>
+      <ul>
+        <li><a href="{{ url_for('user_index') }}">Home</a></li>
+        <li>
+          <a href="{{ url_for('user_dashboard') }}" class="active">Dashboard</a>
+        </li>
+        <li><a href="{{ url_for('user_history') }}">History</a></li>
+        <li><a href="{{ url_for('profile') }}">Profile</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      </ul>
+    </nav>
+
+    <!-- 🔹 Upload Section -->
+    <section class="upload-container">
+      <h2>🧠 Upload System Log</h2>
+      <p>Select a log file (.txt or .log) to scan for security threats.</p>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <input
+          type="file"
+          id="logFile"
+          name="file"
+          accept=".txt,.log"
+          required
+        />
+        <button type="submit" class="btn">Start Scan</button>
+      </form>
+      <div id="progress-container">
+        <div id="progress-bar">0%</div>
+      </div>
+    </section>
+
+    <!-- 🔹 Analysis Results Section -->
+    <section class="analysis-results">
+      <h2>📊 Analysis Results</h2>
+      <div id="output">
+        <p>No analysis yet. Upload a log file to see results.</p>
+      </div>
+    </section>
+
+    <!-- 🔹 Footer -->
+    <footer>© 2025 CyberThreat Detector | Secure Your Digital World</footer>
+
+    <!-- 🔹 JS -->
+    <script>
+      $(document).ready(function () {
+        $("#uploadForm").on("submit", function (e) {
+          e.preventDefault();
+
+          var fileInput = $("#logFile")[0].files[0];
+          if (!fileInput) {
+            alert("Please select a file!");
+            return;
+          }
+
+          var formData = new FormData();
+          formData.append("file", fileInput);
+
+          $("#output").html("<p>Scanning file...</p>");
+          $("#progress-container").show();
+          $("#progress-bar").css("width", "0%").text("0%");
+
+          var progress = 0;
+          var interval = setInterval(function () {
+            if (progress >= 80) clearInterval(interval);
+            else {
+              progress += 10;
+              $("#progress-bar")
+                .css("width", progress + "%")
+                .text(progress + "%");
+            }
+          }, 200);
+
+          $.ajax({
+            url: "/upload",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+              clearInterval(interval);
+              $("#progress-bar").css("width", "100%").text("100%");
+
+              var isMalicious = response.prediction === "Malicious";
+              var colorClass = isMalicious ? "malicious" : "benign";
+              var icon = isMalicious ? "⚠️" : "✅";
+
+              $("#output").html(`
+                <div class="result-card">
+                  <div class="result-header">
+                    <img src="https://img.icons8.com/ios-filled/50/${
+                      isMalicious
+                        ? "e74c3c/warning-shield.png"
+                        : "2ecc71/ok.png"
+                    }"/>
+                    <p>${icon} ${response.message}</p>
+                  </div>
+                  <div class="result-details">
+                    <p><strong>Filename:</strong> ${response.filename}</p>
+                    <p><strong>Prediction:</strong> ${response.prediction}</p>
+                  </div>
+                  <div class="confidence-bar-container">
+                    <div class="confidence-bar ${colorClass}" style="width:${response.confidence.toFixed(
+                2
+              )}%">
+                      ${response.confidence.toFixed(2)}%
+                    </div>
+                  </div>
+
+                  <!-- 🔹 Download Report Button -->
+                  <a href="/download_report/${
+                    response.filename
+                  }" class="download-btn" target="_blank">
+                    ⬇️ Download Report
+                  </a>
+                </div>
+              `);
+            },
+            error: function (xhr) {
+              clearInterval(interval);
+              var errorMsg = xhr.responseJSON?.error || "Upload failed.";
+              $("#output").html(`<p style="color:red;">${errorMsg}</p>`);
+              $("#progress-container").hide();
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

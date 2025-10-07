@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile - CyberThreat Detector</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <style>
+      .profile-container {
+        background: var(--panel);
+        max-width: 600px;
+        margin: 100px auto;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 0 25px rgba(0, 200, 255, 0.15);
+      }
+      .profile-container h2 {
+        color: var(--accent);
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      .profile-container label {
+        display: block;
+        margin: 15px 0 5px;
+        font-weight: 500;
+      }
+      .profile-container input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--accent);
+        background: #0f1e35;
+        color: var(--text);
+        transition: 0.3s;
+      }
+      .profile-container input:focus {
+        border-color: var(--success);
+        box-shadow: 0 0 10px var(--accent);
+        outline: none;
+      }
+      .profile-container button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 12px;
+        border-radius: 30px;
+        border: none;
+        background: var(--accent);
+        font-weight: bold;
+        color: #000;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .profile-container button:hover {
+        background: #00aaff;
+        box-shadow: 0 0 20px var(--accent);
+      }
+      .success-msg {
+        color: var(--success);
+        text-align: center;
+        margin-top: 15px;
+      }
+      .error-msg {
+        color: var(--danger);
+        text-align: center;
+        margin-top: 15px;
+      }
+      /* Navbar logo styling */
+      .navbar-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .navbar-logo img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%; /* Makes it round */
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="navbar-logo">
+        <img
+          src="{{ url_for('static', filename='asset/logo.png') }}"
+          alt="Logo"
+        />
+        <h2>CyberThreat Detector</h2>
+      </div>
+      <ul>
+        <li><a href="{{ url_for('user_index') }}">Home</a></li>
+        <li><a href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+        <li><a href="{{ url_for('user_history') }}">History</a></li>
+        <li><a href="{{ url_for('profile') }}" class="active">Profile</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      </ul>
+    </nav>
+
+    <div class="profile-container">
+      <h2>User Profile</h2>
+      <form id="profileForm">
+        <label for="fullName">Full Name</label>
+        <input
+          type="text"
+          id="fullName"
+          name="fullName"
+          value="{{ user.get('fullName') or user.get('name','') }}"
+          readonly
+        />
+
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value="{{ user.get('email','') }}"
+          readonly
+        />
+
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter new password"
+          readonly
+        />
+
+        <button type="button" id="editBtn">Edit Profile</button>
+        <button type="submit" id="saveBtn" style="display: none">
+          Save Changes
+        </button>
+
+        <p class="success-msg" id="successMsg" style="display: none">
+          Profile updated successfully!
+        </p>
+        <p class="error-msg" id="errorMsg" style="display: none">
+          Failed to update profile!
+        </p>
+      </form>
+    </div>
+
+    <script>
+      // Enable editing
+      document.getElementById("editBtn").addEventListener("click", () => {
+        document.getElementById("fullName").removeAttribute("readonly");
+        document.getElementById("email").removeAttribute("readonly");
+        document.getElementById("password").removeAttribute("readonly");
+        document.getElementById("editBtn").style.display = "none";
+        document.getElementById("saveBtn").style.display = "block";
+      });
+
+      // Save updated profile
+      document
+        .getElementById("profileForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fullName = document.getElementById("fullName").value.trim();
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value.trim();
+
+          try {
+            const response = await fetch("{{ url_for('profile') }}", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ fullName, email, password }),
+            });
+
+            if (response.ok) {
+              document.getElementById("successMsg").style.display = "block";
+              document.getElementById("errorMsg").style.display = "none";
+              document.getElementById("saveBtn").style.display = "none";
+              document.getElementById("editBtn").style.display = "block";
+              document.getElementById("password").value = "";
+            } else {
+              document.getElementById("errorMsg").style.display = "block";
+              document.getElementById("successMsg").style.display = "none";
+            }
+          } catch (err) {
+            console.error(err);
+            document.getElementById("errorMsg").style.display = "block";
+            document.getElementById("successMsg").style.display = "none";
+          }
+        });
+    </script>
+  </body>
+</html>

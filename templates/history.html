@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>History - CyberThreat Detector</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        color: #fff;
+        background: #0b1120;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 50px;
+        background: #101a2c;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+      }
+
+      .navbar-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .navbar-logo img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        gap: 25px;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.3s;
+      }
+
+      nav ul li a:hover,
+      nav ul li a.active {
+        color: #00d4ff;
+      }
+
+      h2 {
+        text-align: center;
+        margin: 40px 0;
+        color: #00d4ff;
+      }
+
+      .history-container {
+        width: 80%;
+        margin: auto;
+        background: rgba(16, 26, 44, 0.9);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 0 25px rgba(0, 200, 255, 0.2);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+      }
+
+      th {
+        background: #0f1b2f;
+        color: #00d4ff;
+      }
+
+      tr:hover {
+        background-color: rgba(0, 212, 255, 0.05);
+      }
+
+      .safe {
+        color: #00ff88;
+        font-weight: bold;
+      }
+
+      .malicious {
+        color: #ff4b4b;
+        font-weight: bold;
+      }
+
+      .timestamp {
+        color: #aaa;
+        font-size: 14px;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px;
+        margin-top: 40px;
+        color: #999;
+        font-size: 14px;
+        border-top: 1px solid rgba(0, 212, 255, 0.1);
+        background: rgba(10, 15, 30, 0.9);
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <div class="navbar-logo">
+        <img
+          src="{{ url_for('static', filename='asset/logo.png') }}"
+          alt="Logo"
+        />
+        <h2>CyberThreat Detector</h2>
+      </div>
+      <ul>
+        <li><a href="{{ url_for('user_index') }}">Home</a></li>
+        <li><a href="{{ url_for('user_dashboard') }}">Dashboard</a></li>
+        <li>
+          <a href="{{ url_for('user_history') }}" class="active">History</a>
+        </li>
+        <li><a href="{{ url_for('profile') }}">Profile</a></li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      </ul>
+    </nav>
+
+    <h2>📜 File Scan History</h2>
+
+    <div class="history-container">
+      {% if uploads and uploads|length > 0 %}
+      <table>
+        <tr>
+          <th>Filename</th>
+          <th>Prediction</th>
+          <th>Confidence</th>
+          <th>Date & Time</th>
+        </tr>
+        {% for item in uploads %}
+        <tr>
+          <td>{{ item.filename }}</td>
+          <td
+            class="{{ 'malicious' if item.prediction == 'Malicious' else 'safe' }}"
+          >
+            {{ item.prediction }}
+          </td>
+          <td>{{ "%.2f"|format(item.confidence) }}%</td>
+          <td class="timestamp">{{ item.timestamp }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <p style="text-align: center; color: #ccc">No file scans found.</p>
+      {% endif %}
+    </div>
+
+    <footer>© 2025 CyberThreat Detector | Secure Your Digital World</footer>
+  </body>
+</html>

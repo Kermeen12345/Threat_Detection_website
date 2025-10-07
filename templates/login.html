@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Cyber Threat Detection</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS File -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/login.css') }}"
+    />
+
+    <style>
+      .logo-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo {
+        height: 45px;
+        width: 45px;
+        border-radius: 50%;
+      }
+
+      .site-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: white;
+        letter-spacing: 1px;
+      }
+
+      /* Centered logo above welcome text */
+      .login-logo {
+        display: block;
+        margin: 0 auto 15px auto;
+        height: 80px;
+        width: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .login-card h2 {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Login Section -->
+    <div class="login-container">
+      <div class="login-card">
+        <!-- Logo Above Welcome Text -->
+        <img
+          src="{{ url_for('static', filename='asset/logo.png') }}"
+          alt="Cyber Threat Detection Logo"
+          class="login-logo"
+        />
+
+        <h2>🔐 Welcome Back</h2>
+        <p>Login to your Cybersecurity Dashboard</p>
+
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="login-btn">Login</button>
+        </form>
+
+        <p class="signup-text">
+          Don’t have an account?
+          <a href="{{ url_for('signup_page') }}">Sign Up</a>
+        </p>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value.trim();
+
+          if (!username || !password) {
+            alert("⚠️ Please fill all fields!");
+            return;
+          }
+
+          try {
+            const response = await fetch("{{ url_for('login_user') }}", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, password }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+              alert("✅ Login successful!");
+              if (result.role === "admin") {
+                window.location.href = "{{ url_for('admin_index') }}";
+              } else {
+                window.location.href = "{{ url_for('user_index') }}";
+              }
+            } else {
+              alert(`❌ ${result.message || "Invalid credentials!"}`);
+            }
+          } catch (error) {
+            console.error(error);
+            alert("🚫 Server error! Please try again later.");
+          }
+        });
+    </script>
+  </body>
+</html>

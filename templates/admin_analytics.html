@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Analytics - Cyber Threat Detector</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/admin.css') }}"
+    />
+    <style>
+      /* Navbar Logo */
+      .navbar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .navbar-logo img {
+        height: 80px; /* increased size */
+        width: 80px; /* increased size */
+        border-radius: 50%; /* makes it round */
+      }
+
+      /* Navbar Alignment */
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #1e1e1e; /* optional: keeps navbar styled */
+        color: #fff;
+      }
+
+      nav ul {
+        list-style: none;
+        display: flex;
+        gap: 20px;
+        margin: 0;
+        padding: 0;
+      }
+
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 400;
+      }
+      /* Charts Section */
+      .charts {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 25px;
+        margin-top: 30px;
+      }
+
+      /* Chart Boxes */
+      .chart-box {
+        background: #0c1628; /* dark panel */
+        padding: 25px;
+        border-radius: 15px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .chart-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 212, 255, 0.25);
+      }
+
+      /* Headings */
+      .chart-box h3 {
+        color: #00d4ff; /* accent color */
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.3rem;
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      }
+
+      /* Canvas Styling */
+      canvas {
+        width: 100% !important;
+        height: 300px !important;
+      }
+
+      /* Special wide chart (Uploads Over Time) */
+      .chart-box.wide {
+        max-width: 95%;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 1024px) {
+        .charts {
+          flex-direction: column;
+          align-items: center;
+        }
+        .chart-box {
+          max-width: 90%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .chart-box h3 {
+          font-size: 1.1rem;
+        }
+        canvas {
+          height: 250px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 🔹 Navbar -->
+    <nav>
+      <div class="navbar-logo">
+        <img
+          src="{{ url_for('static', filename='asset/logo.png') }}"
+          alt="Logo"
+        />
+        <h2>Cyber Threat Admin</h2>
+      </div>
+      <ul>
+        <li><a href="{{ url_for('admin_index') }}">Home</a></li>
+        <li><a href="{{ url_for('admin_panel') }}">Admin Panel</a></li>
+        <li>
+          <a href="{{ url_for('admin_analytics') }}" class="active"
+            >Admin Dashboard</a
+          >
+        </li>
+        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      </ul>
+    </nav>
+
+    <div class="admin-section">
+      <h1>Analytics Dashboard</h1>
+
+      <div class="charts">
+        <div class="chart-box">
+          <h3>Safe vs Malicious Files</h3>
+          <canvas id="safeMaliciousChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+          <h3>Files Uploaded per User</h3>
+          <canvas id="filesPerUserChart"></canvas>
+        </div>
+
+        <div class="chart-box" style="width: 90%">
+          <h3>Uploads Over Time</h3>
+          <canvas id="uploadsOverTimeChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      fetch("/admin/analytics_data")
+        .then((res) => res.json())
+        .then((data) => {
+          // Safe vs Malicious Chart
+          const ctx1 = document
+            .getElementById("safeMaliciousChart")
+            .getContext("2d");
+          new Chart(ctx1, {
+            type: "doughnut",
+            data: {
+              labels: Object.keys(data.safe_vs_malicious),
+              datasets: [
+                {
+                  data: Object.values(data.safe_vs_malicious),
+                  backgroundColor: [
+                    "rgba(75, 192, 192, 0.7)",
+                    "rgba(255, 99, 132, 0.7)",
+                  ],
+                  borderColor: [
+                    "rgba(75, 192, 192, 1)",
+                    "rgba(255, 99, 132, 1)",
+                  ],
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { position: "bottom" } },
+            },
+          });
+
+          // Files per user (Bar Chart)
+          const ctx2 = document
+            .getElementById("filesPerUserChart")
+            .getContext("2d");
+          new Chart(ctx2, {
+            type: "bar",
+            data: {
+              labels: Object.keys(data.files_per_user),
+              datasets: [
+                {
+                  label: "Files Uploaded",
+                  data: Object.values(data.files_per_user),
+                  backgroundColor: "rgba(0, 212, 255, 0.7)",
+                  borderColor: "rgba(0, 212, 255, 1)",
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: false } },
+              scales: { y: { beginAtZero: true } },
+            },
+          });
+
+          // Uploads over time (Line Chart)
+          const ctx3 = document
+            .getElementById("uploadsOverTimeChart")
+            .getContext("2d");
+          const sortedDates = Object.keys(data.recent_uploads).sort();
+          const counts = sortedDates.map((d) => data.recent_uploads[d]);
+          new Chart(ctx3, {
+            type: "line",
+            data: {
+              labels: sortedDates,
+              datasets: [
+                {
+                  label: "Uploads",
+                  data: counts,
+                  fill: true,
+                  backgroundColor: "rgba(0, 212, 255, 0.2)",
+                  borderColor: "rgba(0, 212, 255, 1)",
+                  tension: 0.2,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: { legend: { display: true } },
+              scales: { y: { beginAtZero: true } },
+            },
+          });
+        })
+        .catch((err) => console.error("Error loading charts:", err));
+    </script>
+  </body>
+</html>
