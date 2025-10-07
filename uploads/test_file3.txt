@@ -1,3 +1,0 @@
-This is a YARA test file.
-Signature: EICAR-STANDARD-ANTIVIRUS-TEST-FILE
-Possible C2: 192.0.2.123

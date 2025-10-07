@@ -1,5 +1,0 @@
-# SIMULATED - TEST ONLY
-CONNECT_BACK: 192.0.2.123:4444
-EXFIL_ENDPOINT: http://example.com/upload
-ENCRYPT_FILES: TRUE
-NOTE: This is a harmless simulation string for testing detection rules only.

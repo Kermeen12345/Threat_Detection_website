@@ -1,4 +1,0 @@
-Hello! This is a harmless text file.
-It contains some sample information for testing purposes.
-No scripts, no malware, no suspicious content.
-Have a nice day!
