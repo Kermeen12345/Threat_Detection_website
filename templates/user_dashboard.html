@@ -126,6 +126,7 @@
       .confidence-bar.malicious {
         background: var(--danger);
       }
+
       .confidence-bar.benign {
         background: var(--success);
       }
@@ -137,6 +138,11 @@
         font-size: 14px;
         border-top: 1px solid rgba(0, 212, 255, 0.1);
         background: rgba(10, 15, 30, 0.9);
+      }
+
+      /* Navbar background */
+      nav {
+        background: rgba(10, 15, 30, 0.95);
       }
     </style>
   </head>
@@ -164,14 +170,17 @@
 
     <!-- 🔹 Upload Section -->
     <section class="upload-container">
-      <h2>🧠 Upload System Log</h2>
-      <p>Select a log file (.txt or .log) to scan for security threats.</p>
+      <h2>🧠 Upload File for Threat Analysis</h2>
+      <p>
+        Select a file (.txt, .log, .pdf, .docx) to scan for potential security
+        threats.
+      </p>
       <form id="uploadForm" enctype="multipart/form-data">
         <input
           type="file"
           id="logFile"
           name="file"
-          accept=".txt,.log"
+          accept=".txt,.log,.pdf,.docx"
           required
         />
         <button type="submit" class="btn">Start Scan</button>
@@ -185,7 +194,7 @@
     <section class="analysis-results">
       <h2>📊 Analysis Results</h2>
       <div id="output">
-        <p>No analysis yet. Upload a log file to see results.</p>
+        <p>No analysis yet. Upload a file to see results.</p>
       </div>
     </section>
 
@@ -201,6 +210,15 @@
           var fileInput = $("#logFile")[0].files[0];
           if (!fileInput) {
             alert("Please select a file!");
+            return;
+          }
+
+          var allowed = [".txt", ".log", ".pdf", ".docx"];
+          var ext = fileInput.name.substring(fileInput.name.lastIndexOf("."));
+          if (!allowed.includes(ext.toLowerCase())) {
+            alert(
+              "Invalid file type. Please upload .txt, .log, .pdf, or .docx files."
+            );
             return;
           }
 
